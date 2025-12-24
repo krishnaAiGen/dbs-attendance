@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  student
+  professor
+}
+
+model ProfessorKey {
+  id          String     @id @default(cuid())
+  keyCode     String     @unique @map("key_code")
+  subjectName String     @map("subject_name")
+  isUsed      Boolean    @default(false) @map("is_used")
+  professor   Professor?
+
+  @@map("professor_keys")
+}
+
+model User {
+  id           String              @id @default(cuid())
+  email        String              @unique
+  passwordHash String              @map("password_hash")
+  role         Role
+  fullName     String              @map("full_name")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  professor    Professor?
+  attendance   AttendanceRecord[]
+
+  @@map("users")
+}
+
+model Professor {
+  id             String              @id @default(cuid())
+  userId         String              @unique @map("user_id")
+  professorKeyId String              @unique @map("professor_key_id")
+  subjectName    String              @map("subject_name")
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  professorKey   ProfessorKey        @relation(fields: [professorKeyId], references: [id])
+  sessions       AttendanceSession[]
+
+  @@map("professors")
+}
+
+model AttendanceSession {
+  id            String             @id @default(cuid())
+  professorId   String             @map("professor_id")
+  subjectName   String             @map("subject_name")
+  latitude      Float
+  longitude     Float
+  sessionSecret String             @map("session_secret")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  expiresAt     DateTime           @map("expires_at")
+  isActive      Boolean            @default(true) @map("is_active")
+  professor     Professor          @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  records       AttendanceRecord[]
+
+  @@map("attendance_sessions")
+}
+
+model AttendanceRecord {
+  id              String            @id @default(cuid())
+  sessionId       String            @map("session_id")
+  studentId       String            @map("student_id")
+  studentLatitude Float             @map("student_latitude")
+  studentLongitude Float            @map("student_longitude")
+  distanceMeters  Float             @map("distance_meters")
+  markedAt        DateTime          @default(now()) @map("marked_at")
+  session         AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student         User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@map("attendance_records")
+}
+
