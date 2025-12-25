@@ -5,6 +5,9 @@ import QRCode from 'qrcode'
 import { Spinner } from '@/components/ui'
 import { RefreshCw } from 'lucide-react'
 
+// Get refresh interval from env (default: 30 seconds)
+const DEFAULT_REFRESH_MS = (parseInt(process.env.NEXT_PUBLIC_QR_REFRESH_SECONDS || '30', 10)) * 1000
+
 interface QRDisplayProps {
   sessionId: string
   refreshInterval?: number
@@ -20,7 +23,7 @@ interface QRData {
 
 export function QRDisplay({
   sessionId,
-  refreshInterval = 30000,
+  refreshInterval = DEFAULT_REFRESH_MS,
   onRefresh,
 }: QRDisplayProps) {
   const [qrImage, setQrImage] = useState<string>('')
@@ -138,7 +141,7 @@ export function QRDisplay({
       </div>
 
       <p className="text-sm text-gray-500 text-center max-w-xs">
-        Students must scan this QR code within 100 meters of your location to mark attendance
+        Students must scan this QR code within 100 meters of your location. QR is valid for {Math.floor((parseInt(process.env.NEXT_PUBLIC_QR_VALIDITY_MINUTES || '5', 10)))} minutes.
       </p>
     </div>
   )

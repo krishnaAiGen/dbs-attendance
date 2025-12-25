@@ -8,6 +8,11 @@ export interface QRPayload {
 }
 
 /**
+ * QR validity duration in milliseconds (default: 5 minutes)
+ */
+export const QR_VALIDITY_MS = (parseInt(process.env.QR_VALIDITY_SECONDS || '300', 10)) * 1000
+
+/**
  * Generate a random nonce for QR payload
  */
 function generateNonce(length: number = 16): string {
@@ -67,11 +72,12 @@ export function verifyQRPayload(
 }
 
 /**
- * Check if a QR payload timestamp is within the valid window (60 seconds)
+ * Check if a QR payload timestamp is within the valid window
+ * Default: uses QR_VALIDITY_MS from environment (5 minutes)
  */
 export function isPayloadTimestampValid(
   timestamp: number,
-  maxAgeMs: number = 60000
+  maxAgeMs: number = QR_VALIDITY_MS
 ): boolean {
   const now = Date.now()
   return now - timestamp < maxAgeMs
