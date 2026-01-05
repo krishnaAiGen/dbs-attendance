@@ -35,7 +35,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ghost:
         'text-gray-600 hover:bg-gray-100 focus:ring-gray-400',
       danger:
-        'bg-gradient-to-r from-red-600 to-red-500 text-white hover:from-red-700 hover:to-red-600 focus:ring-red-500 shadow-lg shadow-red-500/25',
+        'bg-gradient-to-r from-red-700 to-red-600 text-white hover:from-red-800 hover:to-red-700 focus:ring-red-600 shadow-lg shadow-red-700/30 border border-red-800',
     }
 
     const sizes = {

@@ -11,6 +11,7 @@ export const professorRegistrationSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
   professorKey: z.string().min(1, 'Professor key is required'),
+  subjectName: z.string().min(2, 'Subject name must be at least 2 characters'),
 })
 
 export const loginSchema = z.object({

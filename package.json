@@ -1,5 +1,5 @@
 {
-  "name": "dbs-attendance",
+  "name": "edunox",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,9 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "npx tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:load": "npx tsx tests/load-test.ts",
+    "test:load-http": "npx tsx tests/load-test-http.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
