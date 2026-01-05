@@ -279,7 +279,7 @@ export default function ProfessorSessionPage() {
 
           <div className="text-center text-sm text-gray-500">
             <p>QR code refreshes every 30 seconds for security</p>
-            <p>Students must be within 100m to mark attendance</p>
+            <p>Students must be within {process.env.NEXT_PUBLIC_MAX_DISTANCE_METERS || '100'}m to mark attendance</p>
           </div>
         </div>
       )}
