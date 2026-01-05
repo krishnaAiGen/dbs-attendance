@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { UserPlus, Mail, Lock, User, Key, ArrowLeft } from 'lucide-react'
+import { UserPlus, Mail, Lock, User, Key, ArrowLeft, BookOpen } from 'lucide-react'
 import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui'
 
 export default function ProfessorRegistrationPage() {
   const router = useRouter()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [subjectName, setSubjectName] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [professorKey, setProfessorKey] = useState('')
@@ -31,7 +32,7 @@ export default function ProfessorRegistrationPage() {
       const response = await fetch('/api/auth/register/professor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, professorKey }),
+        body: JSON.stringify({ email, password, fullName, professorKey, subjectName }),
       })
 
       const data = await response.json()
@@ -98,6 +99,18 @@ export default function ProfessorRegistrationPage() {
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="pl-12"
+                required
+              />
+            </div>
+
+            <div className="relative">
+              <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              <Input
+                type="text"
+                placeholder="Subject Name (e.g., Mathematics, Physics)"
+                value={subjectName}
+                onChange={(e) => setSubjectName(e.target.value)}
                 className="pl-12"
                 required
               />

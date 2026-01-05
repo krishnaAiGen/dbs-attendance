@@ -48,14 +48,14 @@ body {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid #0ea5e9;
+  outline: 2px solid #ef4444;
   outline-offset: 2px;
 }
 
 /* Selection */
 ::selection {
-  background-color: #bae6fd;
-  color: #0c4a6e;
+  background-color: #fecaca;
+  color: #7f1d1d;
 }
 
 /* Animation utilities */

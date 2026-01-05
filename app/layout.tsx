@@ -3,10 +3,10 @@ import { Providers } from '@/components/providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'AttendEase - Smart Attendance System',
+  title: 'Edunox - Smart Attendance System',
   description: 'QR-based attendance management with GPS verification',
-  keywords: ['attendance', 'qr code', 'classroom', 'education'],
-  authors: [{ name: 'AttendEase Team' }],
+  keywords: ['attendance', 'qr code', 'classroom', 'education', 'edunox'],
+  authors: [{ name: 'Edunox Team' }],
 }
 
 export const viewport: Viewport = {
