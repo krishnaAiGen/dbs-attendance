@@ -33,8 +33,9 @@ export function calculateDistance(
 
 /**
  * Maximum allowed distance from classroom in meters
+ * Configurable via MAX_DISTANCE_METERS environment variable
  */
-export const MAX_DISTANCE_METERS = 100
+export const MAX_DISTANCE_METERS = parseInt(process.env.MAX_DISTANCE_METERS || '100', 10)
 
 /**
  * Check if a student is within the allowed proximity

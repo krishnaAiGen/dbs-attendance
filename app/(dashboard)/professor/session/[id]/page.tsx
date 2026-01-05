@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Users, Calendar, Clock, MapPin, Mail, Download } from 'lucide-react'
+import { ArrowLeft, Users, Calendar, Clock, MapPin, Mail, Download, StopCircle, QrCode } from 'lucide-react'
 import { Button, Card, CardHeader, CardTitle, CardContent, PageLoader, Skeleton } from '@/components/ui'
 
 interface Student {
@@ -32,6 +32,7 @@ export default function SessionDetailsPage() {
   const params = useParams()
   const [sessionDetails, setSessionDetails] = useState<SessionDetails | null>(null)
   const [loading, setLoading] = useState(true)
+  const [ending, setEnding] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -114,6 +115,28 @@ export default function SessionDetailsPage() {
     window.URL.revokeObjectURL(url)
   }
 
+  const endSession = async () => {
+    if (!sessionDetails) return
+
+    setEnding(true)
+    try {
+      const response = await fetch(`/api/sessions/${sessionDetails.id}`, {
+        method: 'PATCH',
+      })
+
+      if (response.ok) {
+        setSessionDetails({ ...sessionDetails, isActive: false })
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to end session')
+      }
+    } catch {
+      setError('Failed to end session')
+    } finally {
+      setEnding(false)
+    }
+  }
+
   if (error) {
     return (
       <div className="max-w-4xl mx-auto">
@@ -156,6 +179,52 @@ export default function SessionDetailsPage() {
 
       {sessionDetails && (
         <>
+          {/* Active Session Banner */}
+          {sessionDetails.isActive && (
+            <Card className="border-2 border-emerald-200 bg-emerald-50/50">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                      <QrCode className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-gray-900">
+                          Session is Active
+                        </h3>
+                        <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                          Live
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-sm mt-1">
+                        Students can still scan the QR code to mark attendance
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 w-full sm:w-auto">
+                    <Link href="/professor/session" className="flex-1 sm:flex-none">
+                      <Button variant="outline" className="gap-2 w-full">
+                        <QrCode className="w-4 h-4" />
+                        Show QR
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={endSession}
+                      variant="danger"
+                      className="gap-2 flex-1 sm:flex-none"
+                      isLoading={ending}
+                    >
+                      <StopCircle className="w-4 h-4" />
+                      End Session
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Card>
               <CardContent className="p-4">

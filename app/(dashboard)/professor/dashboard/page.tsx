@@ -104,10 +104,10 @@ export default function ProfessorDashboardPage() {
           <p className="text-gray-500 mt-1">Manage your attendance sessions</p>
         </div>
         {activeSession ? (
-          <Link href={`/professor/session/${activeSession.id}`}>
+          <Link href="/professor/session">
             <Button size="lg" className="gap-2 w-full sm:w-auto">
               <QrCode className="w-5 h-5" />
-              View Active Session
+              Manage Active Session
             </Button>
           </Link>
         ) : (

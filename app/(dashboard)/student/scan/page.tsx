@@ -246,7 +246,7 @@ export default function StudentScanPage() {
       </Card>
 
       <div className="text-center text-sm text-gray-500">
-        <p>Make sure you&apos;re within 100 meters of the classroom</p>
+        <p>Make sure you&apos;re within {process.env.NEXT_PUBLIC_MAX_DISTANCE_METERS || '100'} meters of the classroom</p>
         <p>and location services are enabled</p>
       </div>
     </div>

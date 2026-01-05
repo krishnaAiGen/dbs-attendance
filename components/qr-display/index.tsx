@@ -46,10 +46,10 @@ export function QRDisplay({
       const qrString = JSON.stringify(data)
 
       const qrDataUrl = await QRCode.toDataURL(qrString, {
-        width: 300,
-        margin: 2,
+        width: 400,
+        margin: 4,
         color: {
-          dark: '#0c4a6e',
+          dark: '#000000',
           light: '#ffffff',
         },
         errorCorrectionLevel: 'H',
@@ -106,7 +106,7 @@ export function QRDisplay({
     <div className="flex flex-col items-center space-y-6">
       <div className="relative">
         {loading && !qrImage ? (
-          <div className="w-[300px] h-[300px] flex items-center justify-center bg-gray-50 rounded-2xl">
+          <div className="w-[350px] h-[350px] flex items-center justify-center bg-gray-50 rounded-2xl">
             <Spinner size="lg" />
           </div>
         ) : (
@@ -116,7 +116,7 @@ export function QRDisplay({
               <img
                 src={qrImage}
                 alt="Attendance QR Code"
-                className="w-[300px] h-[300px]"
+                className="w-[350px] h-[350px]"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export function QRDisplay({
       </div>
 
       <p className="text-sm text-gray-500 text-center max-w-xs">
-        Students must scan this QR code within 100 meters of your location. QR is valid for {Math.floor((parseInt(process.env.NEXT_PUBLIC_QR_VALIDITY_MINUTES || '5', 10)))} minutes.
+        Students must scan this QR code within {process.env.NEXT_PUBLIC_MAX_DISTANCE_METERS || '100'} meters of your location. QR is valid for {Math.floor((parseInt(process.env.NEXT_PUBLIC_QR_VALIDITY_MINUTES || '5', 10)))} minutes.
       </p>
     </div>
   )
