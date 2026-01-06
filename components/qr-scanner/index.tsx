@@ -15,6 +15,7 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
   const [isInitializing, setIsInitializing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [zoom, setZoom] = useState(1)
+  const [minZoom, setMinZoom] = useState(1)
   const [maxZoom, setMaxZoom] = useState(1)
   const [supportsZoom, setSupportsZoom] = useState(false)
   const scannerRef = useRef<Html5Qrcode | null>(null)
@@ -86,6 +87,7 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
         const capabilities = track.getCapabilities() as MediaTrackCapabilities & { zoom?: { min: number; max: number } }
         if (capabilities.zoom) {
           setSupportsZoom(true)
+          setMinZoom(capabilities.zoom.min || 1)
           setMaxZoom(capabilities.zoom.max || 5)
           setZoom(capabilities.zoom.min || 1)
         }
@@ -108,13 +110,8 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
     }
   }, [stopScanner])
 
-  const handleZoomIn = () => {
-    const newZoom = Math.min(zoom + 0.5, maxZoom)
-    applyZoom(newZoom)
-  }
-
-  const handleZoomOut = () => {
-    const newZoom = Math.max(zoom - 0.5, 1)
+  const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newZoom = parseFloat(e.target.value)
     applyZoom(newZoom)
   }
 
@@ -154,28 +151,44 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
               </div>
             </div>
 
-            {/* Zoom Controls */}
+            {/* Zoom Slider Control */}
             {supportsZoom && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
-                <button
-                  onClick={handleZoomOut}
-                  disabled={zoom <= 1}
-                  className="p-2 text-white hover:text-primary-400 disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Zoom out"
-                >
-                  <ZoomOut className="w-5 h-5" />
-                </button>
-                <span className="text-white text-sm font-medium min-w-[3rem] text-center">
+              <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 bg-black/70 backdrop-blur-sm px-4 py-3 rounded-2xl">
+                <ZoomOut className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <div className="flex-1 flex flex-col gap-1">
+                  <input
+                    type="range"
+                    min={minZoom}
+                    max={maxZoom}
+                    step={0.1}
+                    value={zoom}
+                    onChange={handleZoomChange}
+                    className="w-full h-2 bg-gray-600 rounded-full appearance-none cursor-pointer
+                      [&::-webkit-slider-thumb]:appearance-none
+                      [&::-webkit-slider-thumb]:w-5
+                      [&::-webkit-slider-thumb]:h-5
+                      [&::-webkit-slider-thumb]:rounded-full
+                      [&::-webkit-slider-thumb]:bg-white
+                      [&::-webkit-slider-thumb]:shadow-lg
+                      [&::-webkit-slider-thumb]:cursor-pointer
+                      [&::-webkit-slider-thumb]:transition-transform
+                      [&::-webkit-slider-thumb]:hover:scale-110
+                      [&::-moz-range-thumb]:w-5
+                      [&::-moz-range-thumb]:h-5
+                      [&::-moz-range-thumb]:rounded-full
+                      [&::-moz-range-thumb]:bg-white
+                      [&::-moz-range-thumb]:border-0
+                      [&::-moz-range-thumb]:shadow-lg
+                      [&::-moz-range-thumb]:cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${((zoom - minZoom) / (maxZoom - minZoom)) * 100}%, #4b5563 ${((zoom - minZoom) / (maxZoom - minZoom)) * 100}%, #4b5563 100%)`
+                    }}
+                  />
+                </div>
+                <ZoomIn className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <span className="text-white text-sm font-bold min-w-[3rem] text-right">
                   {zoom.toFixed(1)}x
                 </span>
-                <button
-                  onClick={handleZoomIn}
-                  disabled={zoom >= maxZoom}
-                  className="p-2 text-white hover:text-primary-400 disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Zoom in"
-                >
-                  <ZoomIn className="w-5 h-5" />
-                </button>
               </div>
             )}
           </>
@@ -209,7 +222,7 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
       <p className="text-sm text-gray-500 text-center max-w-xs">
         Position the QR code within the frame.{' '}
         {supportsZoom
-          ? 'Use zoom controls for distant QR codes.'
+          ? 'Slide to zoom for distant QR codes.'
           : 'Move closer if scanning is difficult.'}
       </p>
     </div>
