@@ -35,11 +35,11 @@ if (process.env.NODE_ENV !== 'production') {
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now()
-    for (const [token, data] of tokenStore.entries()) {
+    tokenStore.forEach((data, token) => {
       if (now - data.createdAt > TOKEN_VALIDITY_MS) {
         tokenStore.delete(token)
       }
-    }
+    })
   }, 60 * 1000)
 }
 
