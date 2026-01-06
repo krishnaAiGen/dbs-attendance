@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { generateQRPayload } from '@/lib/qr'
+import { storeQRPayload } from '@/lib/token-store'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -63,8 +64,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // Generate fresh QR payload
     const payload = generateQRPayload(id, attendanceSession.sessionSecret)
+    
+    // Store payload and get short token for simpler QR code
+    const token = storeQRPayload(payload)
 
-    return NextResponse.json(payload)
+    // Return short token - this creates a much simpler QR code
+    // that's easier to scan from distance
+    return NextResponse.json({ token })
   } catch (error) {
     console.error('Generate QR error:', error)
     return NextResponse.json(
