@@ -8,6 +8,10 @@ const professorKeys = [
   { keyCode: 'PROF-CHEM-003', subjectName: 'Chemistry' },
   { keyCode: 'PROF-CS-004', subjectName: 'Computer Science' },
   { keyCode: 'PROF-ENG-005', subjectName: 'English' },
+  // New professors
+  { keyCode: 'PROF-ACC-006', subjectName: 'Accounts' },
+  { keyCode: 'PROF-MGMT-007', subjectName: 'Principle of Management & Organisational Behaviour' },
+  { keyCode: 'PROF-PROD-008', subjectName: 'Production Management' },
 ]
 
 async function main() {

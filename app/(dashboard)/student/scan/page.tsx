@@ -31,8 +31,45 @@ export default function StudentScanPage() {
     setLocationError(null)
 
     try {
-      // Parse QR data
-      const qrData = JSON.parse(data)
+      let qrData: {
+        sessionId: string
+        timestamp: number
+        nonce: string
+        signature: string
+      }
+
+      console.log('[Scan] Scanned data:', data)
+      console.log('[Scan] Data length:', data.length)
+      
+      // Check if this is a short token or old JSON format
+      // Short tokens are ~8 characters, JSON is much longer and starts with {
+      const isShortToken = data.length <= 20 && !data.startsWith('{')
+      console.log('[Scan] Is short token:', isShortToken)
+      
+      if (isShortToken) {
+        // This is a short token - resolve it first
+        console.log('[Scan] Resolving token...')
+        const resolveResponse = await fetch('/api/qr/resolve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: data }),
+        })
+
+        console.log('[Scan] Resolve response status:', resolveResponse.status)
+        
+        if (!resolveResponse.ok) {
+          const errorData = await resolveResponse.json()
+          console.log('[Scan] Resolve error:', errorData)
+          throw new Error(errorData.error || 'Invalid QR code')
+        }
+
+        qrData = await resolveResponse.json()
+        console.log('[Scan] Resolved payload:', qrData)
+      } else {
+        // Legacy JSON format (for backwards compatibility)
+        console.log('[Scan] Parsing as JSON...')
+        qrData = JSON.parse(data)
+      }
 
       // Get student's location
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
