@@ -13,6 +13,7 @@ import {
   X,
   GraduationCap,
   User,
+  BrainCircuit,
 } from 'lucide-react'
 import { Button } from '@/components/ui'
 
@@ -29,6 +30,7 @@ export function Navigation() {
   const studentLinks = [
     { href: '/student/dashboard', label: 'Dashboard', icon: Home },
     { href: '/student/scan', label: 'Scan QR', icon: QrCode },
+    { href: '/student/interview', label: 'AI Interview', icon: BrainCircuit },
   ]
 
   const professorLinks = [

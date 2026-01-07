@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
 
     console.log('[QR Resolve] Resolving token:', token)
     
-    // Look up the full payload from the short token
-    const payload = getQRPayload(token)
+    // Look up the full payload from the short token (now from database)
+    const payload = await getQRPayload(token)
 
     if (!payload) {
       console.log('[QR Resolve] Token not found or expired:', token)

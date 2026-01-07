@@ -12,7 +12,8 @@
     "db:seed": "npx tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test:load": "npx tsx tests/load-test.ts",
-    "test:load-http": "npx tsx tests/load-test-http.ts"
+    "test:load-http": "npx tsx tests/load-test-http.ts",
+    "test:load-token": "npx tsx tests/load-test-token.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

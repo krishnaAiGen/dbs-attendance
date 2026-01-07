@@ -1,47 +1,22 @@
 import crypto from 'crypto'
+import { prisma } from './prisma'
 
 /**
  * Short Token Store for QR Codes
  * 
- * Uses global variable to persist across Next.js hot reloads
- * In production, consider using Redis for multi-instance support
+ * Uses PostgreSQL database to persist tokens across serverless instances.
+ * This ensures all serverless function instances can access the same tokens.
  */
 
-interface StoredToken {
+interface QRPayload {
   sessionId: string
   timestamp: number
   nonce: string
   signature: string
-  createdAt: number
 }
 
 // Token validity in milliseconds (5 minutes)
 const TOKEN_VALIDITY_MS = 5 * 60 * 1000
-
-// Use global to persist across hot reloads in development
-const globalForTokens = globalThis as unknown as {
-  tokenStore: Map<string, StoredToken> | undefined
-}
-
-// Initialize or reuse existing store
-const tokenStore = globalForTokens.tokenStore ?? new Map<string, StoredToken>()
-
-// Save to global in development
-if (process.env.NODE_ENV !== 'production') {
-  globalForTokens.tokenStore = tokenStore
-}
-
-// Clean up expired tokens every minute
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now()
-    tokenStore.forEach((data, token) => {
-      if (now - data.createdAt > TOKEN_VALIDITY_MS) {
-        tokenStore.delete(token)
-      }
-    })
-  }, 60 * 1000)
-}
 
 /**
  * Generate a short, URL-safe token (8 characters)
@@ -51,55 +26,95 @@ export function generateShortToken(): string {
 }
 
 /**
- * Store QR payload and return a short token
+ * Store QR payload in database and return a short token
  */
-export function storeQRPayload(payload: {
-  sessionId: string
-  timestamp: number
-  nonce: string
-  signature: string
-}): string {
+export async function storeQRPayload(payload: QRPayload): Promise<string> {
   const token = generateShortToken()
+  const expiresAt = new Date(Date.now() + TOKEN_VALIDITY_MS)
   
-  tokenStore.set(token, {
-    ...payload,
-    createdAt: Date.now(),
-  })
-  
-  console.log(`[TokenStore] Stored token: ${token} for session: ${payload.sessionId}`)
-  console.log(`[TokenStore] Total tokens stored: ${tokenStore.size}`)
-  
-  return token
+  try {
+    await prisma.qRToken.create({
+      data: {
+        token,
+        sessionId: payload.sessionId,
+        timestamp: BigInt(payload.timestamp),
+        nonce: payload.nonce,
+        signature: payload.signature,
+        expiresAt,
+      },
+    })
+    
+    console.log(`[TokenStore] Stored token: ${token} for session: ${payload.sessionId}`)
+    
+    return token
+  } catch (error) {
+    console.error('[TokenStore] Failed to store token:', error)
+    throw error
+  }
 }
 
 /**
- * Retrieve QR payload from short token
+ * Retrieve QR payload from short token (from database)
  */
-export function getQRPayload(token: string): StoredToken | null {
+export async function getQRPayload(token: string): Promise<QRPayload | null> {
   console.log(`[TokenStore] Looking up token: ${token}`)
-  console.log(`[TokenStore] Total tokens in store: ${tokenStore.size}`)
   
-  const data = tokenStore.get(token)
-  
-  if (!data) {
-    console.log(`[TokenStore] Token not found: ${token}`)
+  try {
+    const data = await prisma.qRToken.findUnique({
+      where: { token },
+    })
+    
+    if (!data) {
+      console.log(`[TokenStore] Token not found: ${token}`)
+      return null
+    }
+    
+    // Check if token is expired
+    if (new Date() > data.expiresAt) {
+      console.log(`[TokenStore] Token expired: ${token}`)
+      // Clean up expired token
+      await prisma.qRToken.delete({ where: { token } }).catch(() => {})
+      return null
+    }
+    
+    console.log(`[TokenStore] Token valid: ${token}`)
+    
+    return {
+      sessionId: data.sessionId,
+      timestamp: Number(data.timestamp),
+      nonce: data.nonce,
+      signature: data.signature,
+    }
+  } catch (error) {
+    console.error('[TokenStore] Failed to get token:', error)
     return null
   }
-  
-  // Check if token is expired
-  if (Date.now() - data.createdAt > TOKEN_VALIDITY_MS) {
-    console.log(`[TokenStore] Token expired: ${token}`)
-    tokenStore.delete(token)
-    return null
-  }
-  
-  console.log(`[TokenStore] Token valid: ${token}`)
-  return data
 }
 
 /**
  * Invalidate a token
  */
-export function invalidateToken(token: string): void {
-  tokenStore.delete(token)
+export async function invalidateToken(token: string): Promise<void> {
+  try {
+    await prisma.qRToken.delete({ where: { token } })
+  } catch (error) {
+    // Token might not exist, that's fine
+  }
+}
+
+/**
+ * Clean up expired tokens (can be called periodically or by a cron job)
+ */
+export async function cleanupExpiredTokens(): Promise<number> {
+  const result = await prisma.qRToken.deleteMany({
+    where: {
+      expiresAt: { lt: new Date() },
+    },
+  })
+  
+  if (result.count > 0) {
+    console.log(`[TokenStore] Cleaned up ${result.count} expired tokens`)
+  }
+  
+  return result.count
 }
