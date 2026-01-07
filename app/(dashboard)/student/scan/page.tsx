@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle, XCircle, MapPin, Clock, Loader2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { Button, Card, CardHeader, CardTitle, CardContent, PageLoader } from '@/components/ui'
 import { QRScanner } from '@/components/qr-scanner'
 
@@ -226,18 +226,6 @@ export default function StudentScanPage() {
                   <p className="text-emerald-600 mt-2">{result.subjectName}</p>
                 )}
 
-                {result.distance !== undefined && (
-                  <div className="flex items-center gap-2 mt-4 text-gray-600">
-                    <MapPin className="w-5 h-5" />
-                    <span>
-                      {result.distance}m from classroom
-                      {result.distance > 100 && (
-                        <span className="text-red-600"> (max: 100m)</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-
                 {result.success && result.markedAt && (
                   <div className="flex items-center gap-2 mt-2 text-gray-600">
                     <Clock className="w-5 h-5" />
@@ -283,7 +271,7 @@ export default function StudentScanPage() {
       </Card>
 
       <div className="text-center text-sm text-gray-500">
-        <p>Make sure you&apos;re within {process.env.NEXT_PUBLIC_MAX_DISTANCE_METERS || '100'} meters of the classroom</p>
+        <p>Make sure you&apos;re near the classroom</p>
         <p>and location services are enabled</p>
       </div>
     </div>

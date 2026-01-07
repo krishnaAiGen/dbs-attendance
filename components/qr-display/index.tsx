@@ -176,7 +176,7 @@ export function QRDisplay({
         </div>
 
         <p className="text-sm text-gray-500 text-center max-w-xs">
-          Students must scan this QR code within {process.env.NEXT_PUBLIC_MAX_DISTANCE_METERS || '100'} meters of your location.
+          Students must scan this QR code while near your location.
         </p>
       </div>
 
