@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { QrCode, Calendar, MapPin, Clock, BookOpen } from 'lucide-react'
+import { QrCode, Calendar, Clock, BookOpen } from 'lucide-react'
 import { Button, Card, CardHeader, CardTitle, CardContent, PageLoader, Skeleton } from '@/components/ui'
 
 interface AttendanceRecord {
@@ -130,26 +130,6 @@ export default function StudentDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-none">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-emerald-100 text-sm font-medium">Avg Distance</p>
-                <p className="text-4xl font-bold mt-1">
-                  {records.length > 0
-                    ? Math.round(
-                        records.reduce((acc, r) => acc + r.distanceMeters, 0) / records.length
-                      )
-                    : 0}
-                  <span className="text-lg font-normal">m</span>
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <MapPin className="w-6 h-6" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <Card>
@@ -213,12 +193,6 @@ export default function StudentDashboardPage() {
                       <Clock className="w-4 h-4" />
                       {formatTime(record.markedAt)}
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium">
-                      <MapPin className="w-3 h-3" />
-                      {record.distanceMeters}m
-                    </span>
                   </div>
                 </div>
               ))}

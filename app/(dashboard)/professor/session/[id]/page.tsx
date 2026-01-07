@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Users, Calendar, Clock, MapPin, Mail, Download, StopCircle, QrCode } from 'lucide-react'
+import { ArrowLeft, Users, Calendar, Clock, Mail, Download, StopCircle, QrCode } from 'lucide-react'
 import { Button, Card, CardHeader, CardTitle, CardContent, PageLoader, Skeleton } from '@/components/ui'
 
 interface Student {
@@ -93,12 +93,11 @@ export default function SessionDetailsPage() {
   const downloadCSV = () => {
     if (!sessionDetails) return
 
-    const headers = ['Name', 'Email', 'Time Marked', 'Distance (m)']
+    const headers = ['Name', 'Email', 'Time Marked']
     const rows = sessionDetails.students.map((s) => [
       s.name,
       s.email,
       new Date(s.markedAt).toLocaleString(),
-      s.distanceMeters.toString(),
     ])
 
     const csvContent = [
@@ -313,9 +312,6 @@ export default function SessionDetailsPage() {
                         <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">
                           Time
                         </th>
-                        <th className="text-right py-3 px-4 text-sm font-semibold text-gray-600">
-                          Distance
-                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -347,12 +343,6 @@ export default function SessionDetailsPage() {
                                 {formatTime(student.markedAt)}
                               </span>
                             </div>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium">
-                              <MapPin className="w-3 h-3" />
-                              {student.distanceMeters}m
-                            </span>
                           </td>
                         </tr>
                       ))}

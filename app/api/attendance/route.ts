@@ -106,9 +106,7 @@ export async function POST(request: NextRequest) {
     if (!isWithinProximity(distance)) {
       return NextResponse.json(
         {
-          error: 'Too far from classroom',
-          distance: Math.round(distance),
-          maxDistance: MAX_DISTANCE_METERS,
+          error: 'Too far from classroom. Please move closer and try again.',
         },
         { status: 400 }
       )
@@ -134,7 +132,6 @@ export async function POST(request: NextRequest) {
       {
         message: 'Attendance marked successfully',
         subjectName: record.session.subjectName,
-        distance: Math.round(distance),
         markedAt: record.markedAt,
       },
       { status: 201 }
