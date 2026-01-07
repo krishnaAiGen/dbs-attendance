@@ -66,7 +66,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const payload = generateQRPayload(id, attendanceSession.sessionSecret)
     
     // Store payload and get short token for simpler QR code
-    const token = storeQRPayload(payload)
+    const token = await storeQRPayload(payload)
 
     // Return short token - this creates a much simpler QR code
     // that's easier to scan from distance
