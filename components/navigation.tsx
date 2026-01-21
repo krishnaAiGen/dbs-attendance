@@ -14,6 +14,7 @@ import {
   GraduationCap,
   User,
   BrainCircuit,
+  LayoutGrid,
 } from 'lucide-react'
 import { Button } from '@/components/ui'
 
@@ -31,6 +32,7 @@ export function Navigation() {
     { href: '/student/dashboard', label: 'Dashboard', icon: Home },
     { href: '/student/scan', label: 'Scan QR', icon: QrCode },
     { href: '/student/interview', label: 'AI Interview', icon: BrainCircuit },
+    { href: '/student/services', label: 'Services', icon: LayoutGrid },
   ]
 
   const professorLinks = [
