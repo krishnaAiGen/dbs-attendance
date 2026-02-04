@@ -65,7 +65,10 @@ export default function ProfessorDashboardPage() {
     if (session?.user?.role === 'professor') {
       fetchData()
     }
-  }, [session])
+    if (session?.user?.role === 'professor') {
+      fetchData()
+    }
+  }, [session?.user?.role])
 
   if (status === 'loading') {
     return <PageLoader />

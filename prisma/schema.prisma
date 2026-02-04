@@ -31,6 +31,7 @@ model User {
   createdAt    DateTime            @default(now()) @map("created_at")
   professor    Professor?
   attendance   AttendanceRecord[]
+  submissions  Submission[]
 
   @@map("users")
 }
@@ -43,6 +44,7 @@ model Professor {
   user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   professorKey   ProfessorKey        @relation(fields: [professorKeyId], references: [id])
   sessions       AttendanceSession[]
+  quizzes        Quiz[]
 
   @@map("professors")
 }
@@ -90,5 +92,70 @@ model QRToken {
 
   @@index([expiresAt])
   @@map("qr_tokens")
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  professorId String     @map("professor_id")
+  title       String
+  subject     String
+  deadline    DateTime?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  professor   Professor  @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  submissions Submission[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  quizId    String   @map("quiz_id")
+  text      String
+  type      String   @default("MCQ") // MCQ, TEXT (Future)
+  difficulty String  @default("MEDIUM") // LOW, MEDIUM, HARD
+  createdAt DateTime @default(now()) @map("created_at")
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options   Option[]
+  answers   Answer[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  questionId String   @map("question_id")
+  text       String
+  isCorrect  Boolean  @default(false) @map("is_correct")
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  quizId    String   @map("quiz_id")
+  studentId String   @map("student_id")
+  score     Float    @default(0.0)
+  submittedAt DateTime @default(now()) @map("submitted_at")
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student   User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers   Answer[]
+
+  @@unique([quizId, studentId])
+  @@map("submissions")
+}
+
+model Answer {
+  id           String     @id @default(cuid())
+  submissionId String     @map("submission_id")
+  questionId   String     @map("question_id")
+  selectedOptionId String? @map("selected_option_id") // For MCQ
+  textAnswer    String?   @map("text_answer") // For Open Ended (Future)
+  isCorrect     Boolean   @default(false) @map("is_correct")
+  submission    Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  question      Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("answers")
 }
 

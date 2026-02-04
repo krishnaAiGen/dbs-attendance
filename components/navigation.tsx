@@ -15,6 +15,7 @@ import {
   User,
   BrainCircuit,
   LayoutGrid,
+  BookOpen,
 } from 'lucide-react'
 import { Button } from '@/components/ui'
 
@@ -30,6 +31,7 @@ export function Navigation() {
 
   const studentLinks = [
     { href: '/student/dashboard', label: 'Dashboard', icon: Home },
+    { href: '/student/quiz', label: 'Quizzes', icon: BookOpen },
     { href: '/student/scan', label: 'Scan QR', icon: QrCode },
     { href: '/student/interview', label: 'AI Interview', icon: BrainCircuit },
     { href: '/student/services', label: 'Services', icon: LayoutGrid },
@@ -38,6 +40,7 @@ export function Navigation() {
   const professorLinks = [
     { href: '/professor/dashboard', label: 'Dashboard', icon: Home },
     { href: '/professor/session', label: 'New Session', icon: Calendar },
+    { href: '/professor/quiz', label: 'Manage Quizzes', icon: BookOpen },
   ]
 
   const links = isStudent ? studentLinks : professorLinks
@@ -73,10 +76,9 @@ export function Navigation() {
                   <button
                     className={`
                       flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all
-                      ${
-                        isActive
-                          ? 'bg-primary-100 text-primary-700'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ${isActive
+                        ? 'bg-primary-100 text-primary-700'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                       }
                     `}
                   >
@@ -159,10 +161,9 @@ export function Navigation() {
                   <button
                     className={`
                       w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all
-                      ${
-                        isActive
-                          ? 'bg-primary-100 text-primary-700'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ${isActive
+                        ? 'bg-primary-100 text-primary-700'
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                       }
                     `}
                   >
