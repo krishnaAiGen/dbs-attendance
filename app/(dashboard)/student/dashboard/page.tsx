@@ -49,7 +49,10 @@ export default function StudentDashboardPage() {
     if (session?.user?.role === 'student') {
       fetchAttendance()
     }
-  }, [session])
+    if (session?.user?.role === 'student') {
+      fetchAttendance()
+    }
+  }, [session?.user?.role])
 
   if (status === 'loading') {
     return <PageLoader />
