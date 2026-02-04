@@ -59,9 +59,20 @@ export async function GET(req: NextRequest) {
         }
 
         // List upcoming quizzes
-        // In a real app, strict filtering might be needed.
-        // Assuming all students can see all quizzes or filtering by subject matching
+        let whereClause = {};
+
+        if (session.user.role === 'professor') {
+            const professor = await prisma.professor.findUnique({
+                where: { userId: session.user.id }
+            });
+
+            if (professor) {
+                whereClause = { professorId: professor.id };
+            }
+        }
+
         const quizzes = await prisma.quiz.findMany({
+            where: whereClause,
             orderBy: { createdAt: 'desc' },
             include: {
                 professor: {
