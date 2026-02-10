@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { markAttendanceSchema } from '@/lib/validations'
 import { verifyQRPayload, isPayloadTimestampValid } from '@/lib/qr'
-import { calculateDistance, MAX_DISTANCE_METERS, isWithinProximity } from '@/lib/distance'
+import { calculateDistance, isWithinProximity } from '@/lib/distance'
 
 // POST: Mark attendance
 export async function POST(request: NextRequest) {
@@ -102,8 +102,9 @@ export async function POST(request: NextRequest) {
       studentLongitude
     )
 
-    // Check proximity
-    if (!isWithinProximity(distance)) {
+    // Check proximity (skipped when GEOFENCING=False)
+    const geofencingEnabled = process.env.GEOFENCING?.toLowerCase() !== 'false'
+    if (geofencingEnabled && !isWithinProximity(distance)) {
       return NextResponse.json(
         {
           error: 'Too far from classroom. Please move closer and try again.',

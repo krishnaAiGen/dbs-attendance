@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "npx tsx prisma/seed.ts",
+    "create:professor": "npx tsx scripts/create-professor.ts",
     "db:studio": "prisma studio",
     "test:load": "npx tsx tests/load-test.ts",
     "test:load-http": "npx tsx tests/load-test-http.ts",
