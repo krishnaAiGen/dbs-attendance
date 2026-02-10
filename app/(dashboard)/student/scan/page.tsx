@@ -71,16 +71,24 @@ export default function StudentScanPage() {
         qrData = JSON.parse(data)
       }
 
-      // Get student's location
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        })
-      })
+      // Get student's location (skipped when geofencing is disabled)
+      const geofencingEnabled =
+        process.env.NEXT_PUBLIC_GEOFENCING?.toLowerCase() !== 'false'
 
-      const { latitude, longitude } = position.coords
+      let latitude = 0
+      let longitude = 0
+
+      if (geofencingEnabled) {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          })
+        })
+        latitude = position.coords.latitude
+        longitude = position.coords.longitude
+      }
 
       // Submit attendance
       const response = await fetch('/api/attendance', {
@@ -193,7 +201,9 @@ export default function StudentScanPage() {
               <div className="text-center">
                 <p className="font-medium text-gray-900">Verifying attendance...</p>
                 <p className="text-sm text-gray-500 mt-1">
-                  Checking your location and QR code
+                  {process.env.NEXT_PUBLIC_GEOFENCING?.toLowerCase() !== 'false'
+                    ? 'Checking your location and QR code'
+                    : 'Verifying QR code...'}
                 </p>
               </div>
             </div>
@@ -270,10 +280,12 @@ export default function StudentScanPage() {
         </CardContent>
       </Card>
 
-      <div className="text-center text-sm text-gray-500">
-        <p>Make sure you&apos;re near the classroom</p>
-        <p>and location services are enabled</p>
-      </div>
+      {process.env.NEXT_PUBLIC_GEOFENCING?.toLowerCase() !== 'false' && (
+        <div className="text-center text-sm text-gray-500">
+          <p>Make sure you&apos;re near the classroom</p>
+          <p>and location services are enabled</p>
+        </div>
+      )}
     </div>
   )
 }
